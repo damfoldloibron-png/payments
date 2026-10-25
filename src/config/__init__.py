@@ -2,6 +2,7 @@ from config.app import (
     DatabaseSettings,
     FastAPISettings,
     LoggerSettings,
+    RabbitSettings,
 )
 from config.path import ENV_FILE
 from config.registry import settings
@@ -11,5 +12,6 @@ __all__ = [
     "FastAPISettings",
     "LoggerSettings",
     "DatabaseSettings",
+    "RabbitSettings",
     "settings",
 ]

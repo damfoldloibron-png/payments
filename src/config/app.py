@@ -1,3 +1,5 @@
+from urllib.parse import quote
+
 from pydantic import Field, SecretStr
 
 from config.base import BaseAppSettings
@@ -38,4 +40,22 @@ class DatabaseSettings(BaseAppSettings):
         return (
             f"{self.db_dialect}+{self.db_driver}://{user}:{password}"
             f"@{self.db_host}:{self.db_port}/{name}"
+        )
+
+
+class RabbitSettings(BaseAppSettings):
+    rabbit_host: str = Field("localhost")
+    rabbit_port: int = Field(5672)
+    rabbit_user: str = Field("guest")
+    rabbit_password: SecretStr = Field(SecretStr("guest"))
+    rabbit_vhost: str = Field("/")
+    rabbit_prefetch_count: int = Field(10)
+
+    @property
+    def rabbit_url(self) -> str:
+        password = self.rabbit_password.get_secret_value()
+        vhost = quote(self.rabbit_vhost, safe="")
+        return (
+            f"amqp://{self.rabbit_user}:{password}"
+            f"@{self.rabbit_host}:{self.rabbit_port}/{vhost}"
         )

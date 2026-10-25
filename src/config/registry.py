@@ -7,6 +7,7 @@ from config.app import (
     DatabaseSettings,
     FastAPISettings,
     LoggerSettings,
+    RabbitSettings,
 )
 
 logger = logging.getLogger(__name__)
@@ -17,6 +18,7 @@ SETTINGS_REGISTRY: tuple[type, ...] = (
     FastAPISettings,
     LoggerSettings,
     DatabaseSettings,
+    RabbitSettings,
 )
 
 
@@ -54,6 +56,10 @@ class SettingsContainer:
     @property
     def database(self) -> DatabaseSettings:
         return self.get(DatabaseSettings)
+
+    @property
+    def rabbit(self) -> RabbitSettings:
+        return self.get(RabbitSettings)
 
 
 settings = SettingsContainer()

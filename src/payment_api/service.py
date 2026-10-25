@@ -4,7 +4,11 @@ import uuid
 from sqlalchemy.exc import NoResultFound
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from external.broker.messages import PAYMENT_NEW_EVENT, PaymentNewMessage
+from external.broker.messages import (
+    PAYMENT_NEW_EVENT,
+    PAYMENT_NEW_ROUTING_KEY,
+    PaymentNewMessage,
+)
 from outbox.repository import OutboxRepository
 from payment_api.exceptions import PaymentNotFound
 from payment_api.models import Payment
@@ -27,7 +31,9 @@ async def create_payment(
         message = PaymentNewMessage(
             payment_id=payment.id, idempotency_key=idempotency_key
         )
-        outbox.add(PAYMENT_NEW_EVENT, message.model_dump(mode="json"))
+        outbox.add(
+            PAYMENT_NEW_EVENT, PAYMENT_NEW_ROUTING_KEY, message.model_dump(mode="json")
+        )
         logger.debug("Платеж создан idem_key=%s", idempotency_key)
         return payment
 

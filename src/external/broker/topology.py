@@ -1,6 +1,7 @@
 from faststream.rabbit import ExchangeType, RabbitBroker, RabbitExchange, RabbitQueue
 
-PAYMENTS_NEW_KEY = "payments.new"
+from external.broker.messages import PAYMENT_NEW_ROUTING_KEY
+
 PAYMENTS_DLQ_KEY = "payments.dlq"
 
 PAYMENTS_EXCHANGE = RabbitExchange("payments", type=ExchangeType.DIRECT, durable=True)
@@ -11,7 +12,7 @@ PAYMENTS_DLX_EXCHANGE = RabbitExchange(
 PAYMENTS_NEW = RabbitQueue(
     "payments.new",
     durable=True,
-    routing_key=PAYMENTS_NEW_KEY,
+    routing_key=PAYMENT_NEW_ROUTING_KEY,
     arguments={
         "x-dead-letter-exchange": PAYMENTS_DLX_EXCHANGE.name,
         "x-dead-letter-routing-key": PAYMENTS_DLQ_KEY,

@@ -1,3 +1,5 @@
+import logging
+
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from external.broker.messages import PAYMENT_NEW_EVENT, PaymentNewMessage
@@ -6,10 +8,13 @@ from payment_api.models import Payment
 from payment_api.repository import PaymentRepository
 from payment_api.schemas import PaymentCreate
 
+logger = logging.getLogger(__name__)
+
 
 async def create_payment(
     session: AsyncSession, data: PaymentCreate, idempotency_key: str
 ) -> Payment:
+    logger.debug("Создание платежа idem_key=%s", idempotency_key)
     payments = PaymentRepository(session)
     outbox = OutboxRepository(session)
     async with session.begin():
@@ -20,4 +25,5 @@ async def create_payment(
             payment_id=payment.id, idempotency_key=idempotency_key
         )
         outbox.add(PAYMENT_NEW_EVENT, message.model_dump(mode="json"))
+        logger.debug("Платеж создан idem_key=%s", idempotency_key)
         return payment

@@ -1,0 +1,48 @@
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.5.0
+    hooks:
+      - id: trailing-whitespace
+        name: Trim trailing whitespace
+      - id: end-of-file-fixer
+        name: Fix end of file
+      - id: check-yaml
+        name: Check YAML
+      - id: check-added-large-files
+        name: Check for large files
+        args: ['--maxkb=1000']
+      - id: check-merge-conflict
+        name: Check for merge conflicts
+
+  - repo: https://github.com/astral-sh/ruff-pre-commit
+    rev: v0.16.10
+    hooks:
+      - id: ruff
+        name: Ruff lint
+        args: [--fix, --exit-non-zero-on-fix, --show-fixes]
+      - id: ruff-format
+        name: Ruff format
+
+  - repo: local
+    hooks:
+      - id: mypy
+        name: MyPy type check
+        entry: bash -c 'mypy src/'
+        language: system
+        types: [python]
+        pass_filenames: false
+        stages: [commit]
+
+  # - repo: local
+  #   hooks:
+  #     - id: pytest-unit
+  #       name: Pytest unit tests
+  #       entry: bash -c 'pytest tests/unit-tests -q; rc=$?; [ $rc -eq 5 ] && exit 0; exit $rc'
+  #       language: system
+  #       types: [python]
+  #       pass_filenames: false
+  #       stages: [commit]
+
+
+default_stages: [commit]
+fail_fast: false

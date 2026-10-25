@@ -59,3 +59,9 @@ class RabbitSettings(BaseAppSettings):
             f"amqp://{self.rabbit_user}:{password}"
             f"@{self.rabbit_host}:{self.rabbit_port}/{vhost}"
         )
+
+
+class RelaySettings(BaseAppSettings):
+    relay_batch_size: int = Field(100)
+    relay_poll_interval: float = Field(1.0)
+    relay_publish_timeout: float = Field(5.0)

@@ -3,6 +3,7 @@ from config.app import (
     FastAPISettings,
     LoggerSettings,
     RabbitSettings,
+    RelaySettings,
 )
 from config.path import ENV_FILE
 from config.registry import settings
@@ -13,5 +14,6 @@ __all__ = [
     "LoggerSettings",
     "DatabaseSettings",
     "RabbitSettings",
+    "RelaySettings",
     "settings",
 ]

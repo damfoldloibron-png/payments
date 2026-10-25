@@ -9,7 +9,7 @@ from loguru import logger
 
 from config import settings
 
-libs_to_mute: list[str] = []
+libs_to_mute: list[str] = ["aiormq", "aio_pika", "faststream"]
 
 
 def mute_loggers(

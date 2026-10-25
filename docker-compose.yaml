@@ -1,15 +1,42 @@
 services:
-  backend:
+  api:
     build:
       context: .
       dockerfile: Dockerfile
+    image: payment-service
+    command: python src/main.py
     env_file:
       - .env
     ports:
       - "8000:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
     restart: unless-stopped
     networks:
       - backend-network
+
+  consumer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: payment-service
+    command: python -m consumer.app
+    env_file:
+      - .env
+    depends_on:
+      postgres:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_healthy
+    stop_grace_period: 30s
+    restart: unless-stopped
+    networks:
+      - backend-network
+
+
 
   postgres:
     image: postgres:18

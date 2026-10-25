@@ -1,10 +1,10 @@
 import uuid
 
-from sqlalchemy import select
+from sqlalchemy import func, select, update
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from payment_api.models import Payment
+from payment_api.models import Payment, PaymentStatus
 from payment_api.schemas import PaymentCreate
 
 
@@ -40,3 +40,14 @@ class PaymentRepository:
         """Бросает NoResultFound, если платёж с таким ключом не найден"""
         stmt = select(Payment).where(Payment.idempotency_key == idempotency_key)
         return (await self._session.scalars(stmt)).one()
+
+    async def set_status(self, payment_id: uuid.UUID, status: PaymentStatus) -> bool:
+        """Меняет статус, только если платёж ещё PENDING; True, если строка обновлена"""
+        stmt = (
+            update(Payment)
+            .where(Payment.id == payment_id, Payment.status == PaymentStatus.PENDING)
+            .values(status=status, processed_at=func.now())
+            .execution_options(synchronize_session=False)
+        )
+        result = await self._session.execute(stmt)
+        return result.rowcount == 1  # type: ignore

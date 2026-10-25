@@ -3,13 +3,21 @@ import logging
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 
+from payment_api.exceptions import PaymentNotFound
+
 logger = logging.getLogger(__name__)
 
 
 def setup_exception_handlers(app: FastAPI) -> None:
     """
-    Настраивает обработчик неожиданных исключений
+    Настраивает обработчики доменных и неожиданных исключений
     """
+
+    @app.exception_handler(PaymentNotFound)
+    async def payment_not_found_handler(
+        request: Request, exc: PaymentNotFound
+    ) -> JSONResponse:
+        return JSONResponse(status_code=404, content={"detail": str(exc)})
 
     @app.exception_handler(Exception)
     async def all_exception_handler(request: Request, exc: Exception) -> JSONResponse:

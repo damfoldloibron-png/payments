@@ -43,3 +43,35 @@ class PaymentCreated(BaseModel):
         description="Время создания платежа",
         examples=["2026-10-07T12:00:00Z"],
     )
+
+
+class PaymentDetails(BaseModel):
+    payment_id: uuid.UUID = Field(
+        description="Идентификатор платежа",
+        examples=["3fa85f64-5717-4562-b3fc-2c963f66afa6"],
+    )
+    amount: Decimal = Field(description="Сумма платежа", examples=["1500.50"])
+    currency: Currency = Field(description="Валюта платежа", examples=["RUB"])
+    description: str | None = Field(
+        description="Описание платежа", examples=["Оплата заказа №123"]
+    )
+    metadata: dict[str, Any] | None = Field(
+        description="Произвольные данные платежа",
+        examples=[{"order_id": "123"}],
+    )
+    status: PaymentStatus = Field(description="Статус платежа", examples=["PENDING"])
+    webhook_url: str = Field(
+        description="URL уведомления о результате обработки",
+        examples=["https://example.com/webhooks/payments"],
+    )
+    idempotency_key: str = Field(
+        description="Ключ идемпотентности, с которым создан платёж",
+        examples=["order-123-attempt-1"],
+    )
+    created_at: datetime = Field(
+        description="Время создания платежа", examples=["2026-10-07T12:00:00Z"]
+    )
+    processed_at: datetime | None = Field(
+        description="Время завершения обработки, пока платёж не обработан null",
+        examples=["2026-10-07T12:00:04Z"],
+    )

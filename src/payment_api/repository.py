@@ -1,3 +1,5 @@
+import uuid
+
 from sqlalchemy import select
 from sqlalchemy.dialects.postgresql import insert
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -28,6 +30,11 @@ class PaymentRepository:
             .returning(Payment)
         )
         return await self._session.scalar(stmt)
+
+    async def get_by_id(self, payment_id: uuid.UUID) -> Payment:
+        """Бросает NoResultFound, если платёж не найден"""
+        stmt = select(Payment).where(Payment.id == payment_id)
+        return (await self._session.scalars(stmt)).one()
 
     async def get_by_idempotency_key(self, idempotency_key: str) -> Payment:
         """Бросает NoResultFound, если платёж с таким ключом не найден"""

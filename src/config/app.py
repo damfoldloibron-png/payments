@@ -1,4 +1,4 @@
-from pydantic import Field
+from pydantic import Field, SecretStr
 
 from config.base import BaseAppSettings
 
@@ -14,3 +14,28 @@ class LoggerSettings(BaseAppSettings):
     log_level: str = Field(default="DEBUG")
     log_to_console: bool = Field(default=True)
     log_max_frames: int = Field(default=10)
+
+
+class DatabaseSettings(BaseAppSettings):
+    db_dialect: str = Field("postgresql")
+    db_driver: str = Field("asyncpg")
+    db_user: str | None = Field(default=None)
+    db_password: SecretStr | None = Field(default=None)
+    db_host: str = Field("localhost")
+    db_port: int = Field(5432)
+    db_name: str | None = Field(default=None)
+
+    db_echo: bool = Field(False)
+    db_pool_size: int = Field(5)
+    db_max_overflow: int = Field(10)
+    db_connect_timeout: int = Field(30)
+
+    @property
+    def sqlalchemy_url(self) -> str:
+        password = self.db_password.get_secret_value() if self.db_password else ""
+        user = self.db_user or ""
+        name = self.db_name or ""
+        return (
+            f"{self.db_dialect}+{self.db_driver}://{user}:{password}"
+            f"@{self.db_host}:{self.db_port}/{name}"
+        )

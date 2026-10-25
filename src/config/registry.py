@@ -3,13 +3,21 @@ from __future__ import annotations
 import logging
 from typing import TypeVar
 
-from config.app import FastAPISettings, LoggerSettings
+from config.app import (
+    DatabaseSettings,
+    FastAPISettings,
+    LoggerSettings,
+)
 
 logger = logging.getLogger(__name__)
 
 T = TypeVar("T")
 
-SETTINGS_REGISTRY: tuple[type, ...] = (FastAPISettings, LoggerSettings)
+SETTINGS_REGISTRY: tuple[type, ...] = (
+    FastAPISettings,
+    LoggerSettings,
+    DatabaseSettings,
+)
 
 
 class SettingsContainer:
@@ -42,6 +50,10 @@ class SettingsContainer:
     @property
     def logger(self) -> LoggerSettings:
         return self.get(LoggerSettings)
+
+    @property
+    def database(self) -> DatabaseSettings:
+        return self.get(DatabaseSettings)
 
 
 settings = SettingsContainer()

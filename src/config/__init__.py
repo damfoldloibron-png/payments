@@ -4,6 +4,7 @@ from config.app import (
     LoggerSettings,
     RabbitSettings,
     RelaySettings,
+    WebhookSettings,
 )
 from config.path import ENV_FILE
 from config.registry import settings
@@ -15,5 +16,6 @@ __all__ = [
     "DatabaseSettings",
     "RabbitSettings",
     "RelaySettings",
+    "WebhookSettings",
     "settings",
 ]

@@ -11,6 +11,7 @@ from exc_handler import setup_exception_handlers
 from external.broker.core import create_broker
 from external.broker.topology import declare_topology
 from middleware import setup_middlewares
+from outbox.cleanup import run_cleanup
 from outbox.relay import run_relay
 from routers import setup_routers
 
@@ -33,6 +34,10 @@ async def startup(app: FastAPI) -> None:
         run_relay(app.state.sessionmaker, broker, settings.relay, app.state.relay_stop),
         name="outbox-relay",
     )
+    app.state.cleanup_task = asyncio.create_task(
+        run_cleanup(app.state.sessionmaker, settings.relay, app.state.relay_stop),
+        name="outbox-cleanup",
+    )
 
 
 async def shutdown(app: FastAPI) -> None:
@@ -40,6 +45,9 @@ async def shutdown(app: FastAPI) -> None:
     relay_task = getattr(app.state, "relay_task", None)
     if relay_task is not None:
         await relay_task
+    cleanup_task = getattr(app.state, "cleanup_task", None)
+    if cleanup_task is not None:
+        await cleanup_task
     await app.state.broker.stop()
     await app.state.engine.dispose()
     logger.info("FINISH Application")

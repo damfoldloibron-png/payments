@@ -65,6 +65,9 @@ class RelaySettings(BaseAppSettings):
     relay_batch_size: int = Field(100)
     relay_poll_interval: float = Field(1.0)
     relay_publish_timeout: float = Field(5.0)
+    outbox_retention_hours: float = Field(24.0)
+    outbox_cleanup_interval: float = Field(3600.0)
+    outbox_cleanup_batch: int = Field(1000)
 
 
 class WebhookSettings(BaseAppSettings):

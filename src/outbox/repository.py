@@ -1,7 +1,8 @@
 from collections.abc import Sequence
+from datetime import timedelta
 from typing import Any
 
-from sqlalchemy import func, select, update
+from sqlalchemy import delete, func, select, update
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from outbox.models import Outbox
@@ -30,3 +31,16 @@ class OutboxRepository:
     async def mark_published(self, ids: Sequence[int]) -> None:
         stmt = update(Outbox).where(Outbox.id.in_(ids)).values(published_at=func.now())
         await self._session.execute(stmt)
+
+    async def delete_published(self, older_than: timedelta, limit: int) -> int:
+        """Удаляет до limit опубликованных записей старше older_than возвращает число"""
+        expired = (
+            select(Outbox.id)
+            .where(Outbox.published_at < func.now() - older_than)
+            .order_by(Outbox.id)
+            .limit(limit)
+            .with_for_update(skip_locked=True)
+        )
+        stmt = delete(Outbox).where(Outbox.id.in_(expired))
+        result = await self._session.execute(stmt)
+        return result.rowcount  # type: ignore

@@ -8,7 +8,7 @@
 cp .env.example .env
 python3 -m venv .venv
 source .venv/bin/activate
-pip install -r requirements.txt # для миграции алембик и тестов
+pip install -r requirements-dev.txt # для миграции алембик и тестов
 docker compose up -d --build --wait && alembic upgrade head
 ```
 

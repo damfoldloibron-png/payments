@@ -27,7 +27,7 @@ async def startup(app: FastAPI) -> None:
         asyncio.Event()
     )  # Событие отмены, чтобы корректно завершить обработку задач в relay процессе
     await broker.connect()
-    await declare_topology(broker)
+    await declare_topology(broker, settings.retry.retry_delays)
 
     app.state.relay_task = asyncio.create_task(
         run_relay(app.state.sessionmaker, broker, settings.relay, app.state.relay_stop),

@@ -19,11 +19,13 @@ def create_app() -> FastStream:
     engine = create_engine(settings.database)
     sessionmaker = create_sessionmaker(engine)
     http_client = create_webhook_client(settings.webhook)
-    register_handlers(broker, sessionmaker, http_client)
+    register_handlers(
+        broker, sessionmaker, http_client, settings.retry.retry_max_attempts
+    )
 
     async def declare() -> None:
         await broker.connect()
-        await declare_topology(broker)
+        await declare_topology(broker, settings.retry.retry_delays)
         logger.info("Консьюмер запущен")
 
     async def dispose_engine() -> None:
@@ -31,7 +33,9 @@ def create_app() -> FastStream:
         await engine.dispose()
         logger.info("Консьюмер остановлен")
 
-    return FastStream(broker, on_startup=[declare], after_shutdown=[dispose_engine])
+    return FastStream(
+        broker, on_startup=[declare], after_shutdown=[dispose_engine], logger=logger
+    )
 
 
 if __name__ == "__main__":

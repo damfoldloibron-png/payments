@@ -69,3 +69,17 @@ class RelaySettings(BaseAppSettings):
 
 class WebhookSettings(BaseAppSettings):
     webhook_timeout: float = Field(5.0)
+
+
+class RetrySettings(BaseAppSettings):
+    retry_max_attempts: int = Field(3)
+    retry_base_delay: float = Field(5.0)
+    retry_factor: float = Field(2.0)
+
+    @property
+    def retry_delays(self) -> tuple[float, ...]:
+        """Задержки между попытками: base * factor**i, всего попыток минус одна"""
+        return tuple(
+            self.retry_base_delay * self.retry_factor**i
+            for i in range(self.retry_max_attempts - 1)
+        )

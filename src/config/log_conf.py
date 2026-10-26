@@ -9,7 +9,21 @@ from loguru import logger
 
 from config import settings
 
-libs_to_mute: list[str] = ["aiormq", "aio_pika", "faststream"]
+libs_to_mute: list[str] = [
+    "aiormq",
+    "aio_pika",
+    "faststream",
+    "httpx",
+    "httpx._client",
+    "httpx._config",
+    "httpcore",
+    "httpcore._trace",
+    "httpcore.connection",
+    "httpcore.http11",
+    "httpcore.proxy",
+    "httpcore._sync",
+    "httpcore._async",
+]
 
 
 def mute_loggers(
@@ -173,6 +187,7 @@ def setup_logging():
         backtrace=False,
         diagnose=False,
         enqueue=True,
+        colorize=True,
     )
 
     mute_loggers(libs_to_mute)

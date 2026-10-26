@@ -14,4 +14,7 @@ def create_broker(cfg: RabbitSettings) -> RabbitBroker:
         # prefetch ограничивает число неподтверждённых сообщений на consumer,
         # то есть число одновременно обрабатываемых платежей
         default_channel=Channel(prefetch_count=cfg.rabbit_prefetch_count),
+        # Свой логгер FastStream отключён: он пишет мимо общего форматирования,
+        # ошибки обработки логирует handler
+        logger=None,
     )

@@ -9,6 +9,7 @@ from config.app import (
     LoggerSettings,
     RabbitSettings,
     RelaySettings,
+    RetrySettings,
     WebhookSettings,
 )
 
@@ -22,6 +23,7 @@ SETTINGS_REGISTRY: tuple[type, ...] = (
     DatabaseSettings,
     RabbitSettings,
     RelaySettings,
+    RetrySettings,
     WebhookSettings,
 )
 
@@ -68,6 +70,10 @@ class SettingsContainer:
     @property
     def relay(self) -> RelaySettings:
         return self.get(RelaySettings)
+
+    @property
+    def retry(self) -> RetrySettings:
+        return self.get(RetrySettings)
 
     @property
     def webhook(self) -> WebhookSettings:
